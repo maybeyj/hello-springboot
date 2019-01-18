@@ -11,6 +11,6 @@ import org.springframework.stereotype.Component;
 public class Subscriber2 {
     @JmsListener(destination = "topic")
     public void consumer(String message) {
-        System.out.println("subscriber2111:" + message);
+        System.out.println("subscriber21112222:" + message);
     }
 }

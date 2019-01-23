@@ -10,7 +10,7 @@ import javax.jms.Topic;
  * @author: Yin Jian
  * @create: 2019-01-18 11:49
  */
-@Component
+/*@Component*/
 public class Subscriber {
 
     @JmsListener(destination = "topic")

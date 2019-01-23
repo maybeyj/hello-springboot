@@ -1,7 +1,7 @@
 package com.yinjian.service;
 
 
-import com.yinjian.domain.UserDO;
+import com.yinjian.domain.sys.UserDO;
 
 import java.util.List;
 
@@ -11,4 +11,5 @@ import java.util.List;
  */
 public interface UserService {
     List<UserDO> listGetUser();
+    UserDO login(String userName);
 }

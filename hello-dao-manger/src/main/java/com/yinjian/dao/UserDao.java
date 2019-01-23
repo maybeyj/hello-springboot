@@ -1,6 +1,6 @@
 package com.yinjian.dao;
 
-import com.yinjian.domain.UserDO;
+import com.yinjian.domain.sys.UserDO;
 
 import java.util.List;
 
@@ -10,4 +10,5 @@ import java.util.List;
  */
 public interface UserDao {
     List<UserDO> listGetUser();
+    UserDO geuUserByUserName(String userName);
 }

@@ -1,6 +1,6 @@
 package com.yinjian.service.impl;
 
-import com.yinjian.domain.UserDO;
+import com.yinjian.domain.sys.UserDO;
 import com.yinjian.manger.UserManager;
 import com.yinjian.service.UserService;
 import org.springframework.stereotype.Service;
@@ -22,5 +22,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDO> listGetUser() {
         return userManager.listGetUser();
+    }
+
+    @Override
+    public UserDO login(String userName) {
+        return userManager.geuUserByUserName(userName);
     }
 }

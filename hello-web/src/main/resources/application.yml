@@ -4,7 +4,7 @@ server:
     context-path: /hello
 spring:
   datasource:
-    url: jdbc:mysql://192.168.52.128:3306/hello_springboot
+    url: jdbc:mysql://localhost:3306/test
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: abc123
@@ -19,3 +19,10 @@ spring:
 mybatis:
   type-aliases-package: com.yinjian.domain
   mapper-locations: classpath:mapper/*.xml
+logging:
+  config: classpath:logback-dev.xml
+jwt:
+  token:
+    secret: yinjian
+    issuer: www.workbei.com
+    expire-mills: 1000 * 60 * 60 * 24L

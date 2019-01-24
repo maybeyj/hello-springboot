@@ -1,8 +1,9 @@
 package com.yinjian.shiro;
 
 import org.apache.shiro.mgt.DefaultSecurityManager;
+import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
+import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SecurityManager;
-import org.apache.shiro.session.mgt.DefaultSessionManager;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.filter.authc.AnonymousFilter;
@@ -29,43 +30,53 @@ public class ShiroConfig {
     }
 
     /**
-     * subject工厂
+     * subject工厂(已经关闭session)
+     *
      * @return
      */
-   /* @Bean
-    public StatelessSubjectFactory subjectFactory(){
+    /*@Bean
+    public StatelessSubjectFactory subjectFactory() {
         StatelessSubjectFactory statelessSubjectFactory = new StatelessSubjectFactory();
         return statelessSubjectFactory;
     }*/
 
     /**
-     * session会话管理器，禁用掉会话调度器
-     * @return
-     */
-    /*@Bean
-    public SessionManager sessionManager(){
-        DefaultSessionManager defaultSessionManager = new DefaultSessionManager();
-        defaultSessionManager.setSessionValidationSchedulerEnabled(false);
-        return defaultSessionManager;
-    }*/
-
-    /**
-     *  security管理器
+     * 关闭session
      * @return
      */
     @Bean
-    public SecurityManager securityManager() {
+    public SessionManager sessionManager(){
+        DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
+        return sessionManager;
+    }
+
+    /**
+     * security管理器
+     *
+     * @return
+     */
+    @Bean
+    public SecurityManager securityManager(SessionManager sessionManager) {
         DefaultSecurityManager defaultSecurityManager = new DefaultWebSecurityManager();
         //defaultSecurityManager.setSubjectFactory(subjectFactory);
-        //defaultSecurityManager.setSessionManager(sessionManager);
+        defaultSecurityManager.setSessionManager(sessionManager);
         defaultSecurityManager.setRealm(statelessRealm);
+        /*
+         * 关闭shiro自带的session，详情见文档
+         * http://shiro.apache.org/session-management.html#SessionManagement-StatelessApplications%28Sessionless%29
+         */
+        DefaultSubjectDAO subjectDAO = new DefaultSubjectDAO();
+        DefaultSessionStorageEvaluator defaultSessionStorageEvaluator = new DefaultSessionStorageEvaluator();
+        defaultSessionStorageEvaluator.setSessionStorageEnabled(false);
+        subjectDAO.setSessionStorageEvaluator(defaultSessionStorageEvaluator);
+        defaultSecurityManager.setSubjectDAO(subjectDAO);
         return defaultSecurityManager;
     }
 
-    private StatelessAuthenticationFilter statelessAuthenticationFilter =new StatelessAuthenticationFilter();
 
     /**
      * 过滤器
+     *
      * @param securityManager
      * @return
      */
@@ -75,9 +86,9 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setSecurityManager(securityManager);
 
         //自定义配置过滤器
-        Map<String, Filter> filterMap=new HashMap<>();
-        filterMap.put("anon",new AnonymousFilter());
-        filterMap.put("statelessAuthenticationFilter", statelessAuthenticationFilter);
+        Map<String, Filter> filterMap = new HashMap<>();
+        filterMap.put("anon", new AnonymousFilter());
+        filterMap.put("statelessAuthenticationFilter", new StatelessAuthenticationFilter());
         //set
         shiroFilterFactoryBean.setFilters(filterMap);
 
@@ -91,8 +102,6 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/webjars/**", "anon");
         // 功倍电商引擎系统拦截器
         filterChainDefinitionMap.put("/**", "statelessAuthenticationFilter");
-        //配置退出过滤器
-        filterChainDefinitionMap.put("/logout", "logout");
         //set
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
